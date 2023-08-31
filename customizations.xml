@@ -1,0 +1,50 @@
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Entities></Entities>
+  <Roles></Roles>
+  <Workflows>
+    <Workflow WorkflowId="{916f7126-df04-4aae-8215-9a0c27a4089c}" Name="RPAChallenge">
+      <JsonFileName>/Workflows/RPAChallenge-916F7126-DF04-4AAE-8215-9A0C27A4089C.json</JsonFileName>
+      <Type>1</Type>
+      <Subprocess>0</Subprocess>
+      <Category>6</Category>
+      <Mode>0</Mode>
+      <Scope>4</Scope>
+      <OnDemand>0</OnDemand>
+      <TriggerOnCreate>0</TriggerOnCreate>
+      <TriggerOnDelete>0</TriggerOnDelete>
+      <AsyncAutodelete>0</AsyncAutodelete>
+      <SyncWorkflowLogOnFailure>0</SyncWorkflowLogOnFailure>
+      <StateCode>1</StateCode>
+      <StatusCode>2</StatusCode>
+      <RunAs>1</RunAs>
+      <IsTransacted>1</IsTransacted>
+      <IntroducedVersion>1.0</IntroducedVersion>
+      <IsCustomizable>1</IsCustomizable>
+      <BusinessProcessType>0</BusinessProcessType>
+      <UIFlowType>2</UIFlowType>
+      <IsCustomProcessingStepAllowedForOtherPublishers>1</IsCustomProcessingStepAllowedForOtherPublishers>
+      <Metadata>{"isvalid":true,"schemaVersion":"ROBIN_20211012","containsActiveConnections":false}</Metadata>
+      <Inputs>{"schema":null}</Inputs>
+      <Outputs>{"schema":null}</Outputs>
+      <Dependencies>{"childFlows":[]}</Dependencies>
+      <ConnectionReferences>[]</ConnectionReferences>
+      <Definition>"@@ConnectionString: ''\r\n@@Type: 'Local'\r\n@@DesktopType: 'local'\r\n@@DisplayName: 'Computador local'\r\nIMPORT 'controlRepo.appmask' AS appmask\r\nIMPORT 'imageRepo.imgrepo' AS imgrepo\r\n@SENSITIVE: []\r\n/# Projeto RPA Challange.\r\nAcessar o site 'rpachallange'\r\nFazer o Download do Aquivo Excel\r\nLer e inseir cada dados nos campos do site.\r\nLembre-se que os seletores são dinânimos.\r\n- Maria Lima - 31/08/2023#/\r\nCALL se_Acessar_RPAChallenge\r\nCALL sq_Baixar_ArquivoExcel\r\nCALL sq_Leitura_ArquivoExcel\r\nCALL sq_Preencher_FormularioChallange\r\nDisplay.ShowMessageDialog.ShowMessageWithTimeout Title: $'''Concluído''' Message: $'''O processo RPA Challange foi concluido com sucesso''' Icon: Display.Icon.Information Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False Timeout: 5\r\nFUNCTION se_Acessar_RPAChallenge GLOBAL\r\n    # Acessa o SIte do RPA Challange\r\n    WebAutomation.LaunchChrome.LaunchChrome Url: $'''https://rpachallenge.com/''' WindowState: WebAutomation.BrowserWindowState.Maximized ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=&gt; var_sessRPA\r\nEND FUNCTION\r\nFUNCTION sq_Baixar_ArquivoExcel GLOBAL\r\n    SET var_strCaminhoArquivo TO $'''C:\\\\Users\\\\maria.lima\\\\OneDrive - T2C CONSULTORIA LTDA\\\\Documentos\\\\PoweAutomate\\\\challenge2.xlsx'''\r\n    WebAutomation.Click.Click BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['Anchor \\'Download Excel cloud_download\\''] ClickType: WebAutomation.ClickType.LeftClick MouseClick: True WaitForPageToLoadTimeout: 60 MousePositionRelativeToElement: WebAutomation.RectangleEdgePoint.MiddleCenter OffsetX: 0 OffsetY: 0\r\n    UIAutomation.PopulateTextField TextField: appmask['Caixa Dialogo - Download']['NomeArquivo'] Text: var_strCaminhoArquivo Mode: UIAutomation.PopulateTextMode.Replace ClickType: UIAutomation.PopulateMouseClickType.SingleClick\r\n    UIAutomation.Click Element: appmask['Caixa Dialogo - Download']['Button \\'Salvar\\''] ClickType: UIAutomation.ClickType.LeftClick MousePositionRelativeToElement: UIAutomation.RectangleEdgePoint.MiddleCenter OffsetX: 0 OffsetY: 0\r\n    UIAutomation.Click Element: appmask['Caixa Dialogo - Download']['Button \\'Sim\\''] ClickType: UIAutomation.ClickType.LeftClick MousePositionRelativeToElement: UIAutomation.RectangleEdgePoint.MiddleCenter OffsetX: 0 OffsetY: 0\r\n    ON ERROR ClickFailedError\r\n\r\n    ON ERROR\r\n\r\n    END\r\nEND FUNCTION\r\nFUNCTION sq_Leitura_ArquivoExcel GLOBAL\r\n    /# Faz a leitura do arquivo Excel extrai os dados e salva numa DataTable\r\n#/\r\n    Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: var_strCaminhoArquivo Visible: False ReadOnly: False Instance=&gt; var_dtChallange\r\n    Excel.ReadFromExcel.ReadCells Instance: var_dtChallange StartColumn: $'''A''' StartRow: 1 EndColumn: $'''G''' EndRow: 11 ReadAsText: False FirstLineIsHeader: True RangeValue=&gt; var_dtDados\r\n    Excel.CloseExcel.Close Instance: var_dtChallange\r\nEND FUNCTION\r\nFUNCTION sq_Preencher_FormularioChallange GLOBAL\r\n    /# Com a sessão do challange aberta.\r\nInsere os dados da tabela no formulário.#/\r\n    SET var_strInputName TO $'''input[ng-reflect-name=\\\"labelFirstName\\\"]'''\r\n    SET var_strInputLastName TO $'''input[ng-reflect-name=\\\"labelLastName\\\"]'''\r\n    SET var_strInputEmail TO $'''input[ng-reflect-name=\\\"labelEmail\\\"]'''\r\n    SET var_strInputAddress TO $'''input[ng-reflect-name=\\\"labelAddress\\\"]'''\r\n    SET var_strInputRole TO $'''input[ng-reflect-name=\\\"labelRole\\\"]'''\r\n    SET var_strInputPhone TO $'''input[ng-reflect-name=\\\"labelPhone\\\"]'''\r\n    SET var_strInputComName TO $'''input[ng-reflect-name=\\\"labelCompanyName\\\"]'''\r\n    WebAutomation.Click.Click BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['Button \\'Start\\''] ClickType: WebAutomation.ClickType.LeftClick MouseClick: True WaitForPageToLoadTimeout: 60 MousePositionRelativeToElement: WebAutomation.RectangleEdgePoint.MiddleCenter OffsetX: 0 OffsetY: 0\r\n    WAIT 2\r\n    LOOP FOREACH item IN var_dtDados\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['FirstName'] Text: item[0] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['LastName'] Text: item[1] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['CopanyName'] Text: item[2] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['RoleCompany'] Text: item[3] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['Address'] Text: item[4] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['Email'] Text: item[5] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.PopulateTextField.PopulateTextFieldUsePhysicalKeyboard BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['PhoneNumber'] Text: item[6] Mode: WebAutomation.PopulateTextMode.Replace UnfocusAfterPopulate: True WaitForPageToLoadTimeout: 60\r\n        WebAutomation.Click.Click BrowserInstance: var_sessRPA Control: appmask['Web Page \\'https://rpachallenge.com/\\'']['Input submit \\'Submit\\''] ClickType: WebAutomation.ClickType.LeftClick MouseClick: True WaitForPageToLoadTimeout: 60 MousePositionRelativeToElement: WebAutomation.RectangleEdgePoint.MiddleCenter OffsetX: 0 OffsetY: 0\r\n    END\r\nEND FUNCTION\r\n"</Definition>
+      <SchemaVersion>2022.06</SchemaVersion>
+      <PrimaryEntity>none</PrimaryEntity>
+      <LocalizedNames>
+        <LocalizedName languagecode="1046" description="RPAChallenge" />
+      </LocalizedNames>
+    </Workflow>
+  </Workflows>
+  <FieldSecurityProfiles></FieldSecurityProfiles>
+  <Templates />
+  <EntityMaps />
+  <EntityRelationships />
+  <OrganizationSettings />
+  <optionsets />
+  <CustomControls />
+  <EntityDataProviders />
+  <Languages>
+    <Language>1046</Language>
+  </Languages>
+</ImportExportXml>
